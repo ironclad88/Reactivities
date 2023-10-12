@@ -14,7 +14,7 @@ function App() {
 
   return (
     <div>
-      <Header as='h2' icon='users' content='Reactivites' />
+      <Header as="h2" icon="users" content="Reactivites" />
       <List>
         {activities.map((activity: any) => (
           <List.Item key={activity.id}>{activity.title}</List.Item>
