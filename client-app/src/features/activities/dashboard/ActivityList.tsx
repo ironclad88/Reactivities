@@ -1,23 +1,16 @@
 import { Button, Item, Label, Segment } from "semantic-ui-react";
-import { Activity } from "../../../app/models/activity";
 import { SyntheticEvent, useState } from "react";
+import { useStore } from "../../../app/stores/store";
+import { observer } from "mobx-react-lite";
 
-interface Props {
-  activities: Activity[];
-  setSelectedActivity: (id: string) => void;
-  closeForm: () => void;
-  deleteActivity: (id: string) => void;
-  submitting: boolean;
-}
-export default function ActivityList({
-  activities,
-  setSelectedActivity,
-  closeForm,
-  deleteActivity,
-  submitting,
-}: Props) {
+export default observer(function ActivityList() {
   const [target, setTarget] = useState("");
-  function handleDeleteActivity(e: SyntheticEvent<HTMLButtonElement>, id: string) {
+  const { activityStore } = useStore();
+  const { selectActivity, closeForm, deleteActivity, activitiesByDate:activities, loading } = activityStore;
+  function handleDeleteActivity(
+    e: SyntheticEvent<HTMLButtonElement>,
+    id: string
+  ) {
     setTarget(e.currentTarget.name);
     deleteActivity(id);
   }
@@ -41,13 +34,13 @@ export default function ActivityList({
                   content="View"
                   color="blue"
                   onClick={() => {
-                    setSelectedActivity(activity.id);
+                    selectActivity(activity.id);
                     closeForm();
                   }}
                 />
                 <Button
                   name={activity.id}
-                  loading={submitting && target === activity.id}
+                  loading={loading && target === activity.id}
                   floated="right"
                   content="Delete"
                   color="red"
@@ -63,4 +56,4 @@ export default function ActivityList({
       </Item.Group>
     </Segment>
   );
-}
+});
