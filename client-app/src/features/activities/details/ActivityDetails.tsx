@@ -30,7 +30,7 @@ export default observer(function ActivityDetails() {
         <ActiivityDetailedChat/>
       </Grid.Column>
       <Grid.Column width={6}>
-        <ActiivityDetailedSidebar/>
+        <ActiivityDetailedSidebar activity={activity}/>
       </Grid.Column>
     </Grid>
   );
