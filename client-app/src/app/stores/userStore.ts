@@ -51,4 +51,10 @@ export default class UserStore {
       console.log(error);
     }
   };
+
+  setImage = async (image: string) => {
+    if (this.user) {
+      this.user.image = image;
+    }
+  };
 }
