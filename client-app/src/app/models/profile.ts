@@ -21,6 +21,14 @@ export class Profile implements IProfile {
   photos?: Photo[];
 }
 
+export class ProfileFormValues  {
+    constructor(user: User) {
+      this.displayName = user.displayName;
+    }
+    displayName: string;
+    bio?: string;
+  }
+
 
 export interface Photo {
     id: string;
