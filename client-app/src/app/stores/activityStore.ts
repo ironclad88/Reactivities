@@ -18,18 +18,14 @@ export default class ActivityStore {
   }
 
   get activitiesByDate() {
-    return Array.from(this.activityRegistry.values()).sort(
-      (a, b) => a.date!.getTime() - b.date!.getTime()
-    );
+    return Array.from(this.activityRegistry.values()).sort((a, b) => a.date!.getTime() - b.date!.getTime());
   }
 
   get groupedActivities() {
     return Object.entries(
       this.activitiesByDate.reduce((activities, activity) => {
         const date = format(activity.date!, "dd MMM yyyy");
-        activities[date] = activities[date]
-          ? [...activities[date], activity]
-          : [activity];
+        activities[date] = activities[date] ? [...activities[date], activity] : [activity];
         return activities;
       }, {} as { [key: string]: Activity[] })
     );
@@ -83,13 +79,9 @@ export default class ActivityStore {
   private setActivity = (activity: Activity) => {
     const user = store.userStore.user;
     if (user) {
-      activity.isGoing = activity.attendees!.some(
-        (a) => a.username === user.username
-      );
+      activity.isGoing = activity.attendees!.some((a) => a.username === user.username);
       activity.isHost = activity.hostUsername === user.username;
-      activity.host = activity.attendees!.find(
-        (x) => x.username === activity.hostUsername
-      );
+      activity.host = activity.attendees!.find((x) => x.username === activity.hostUsername);
     }
     activity.date = new Date(activity.date!);
     this.activityRegistry.set(activity.id, activity);
@@ -160,20 +152,16 @@ export default class ActivityStore {
       await agent.Activities.attend(this.selectedActivity!.id);
       runInAction(() => {
         if (this.selectedActivity?.isGoing) {
-          this.selectedActivity.attendees =
-            this.selectedActivity.attendees?.filter(
-              (a) => a.username !== user?.username
-            );
+          this.selectedActivity.attendees = this.selectedActivity.attendees?.filter(
+            (a) => a.username !== user?.username
+          );
           this.selectedActivity.isGoing = false;
         } else {
           const attendee = new Profile(user!);
           this.selectedActivity?.attendees?.push(attendee);
           this.selectedActivity!.isGoing = true;
         }
-        this.activityRegistry.set(
-          this.selectedActivity!.id,
-          this.selectedActivity!
-        );
+        this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
       });
     } catch (error) {
       console.log(error);
@@ -187,9 +175,8 @@ export default class ActivityStore {
     try {
       await agent.Activities.attend(this.selectedActivity!.id);
       runInAction(() => {
-        this.selectedActivity!.isCancelled =
-          !this.selectedActivity?.isCancelled;
-          this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
+        this.selectedActivity!.isCancelled = !this.selectedActivity?.isCancelled;
+        this.activityRegistry.set(this.selectedActivity!.id, this.selectedActivity!);
       });
     } catch (error) {
       console.log(error);
@@ -198,5 +185,9 @@ export default class ActivityStore {
         this.loading = false;
       });
     }
+  };
+
+  clearSelectedActivity = () => {
+    this.selectedActivity = undefined;
   };
 }
