@@ -7,6 +7,11 @@ interface Props {
   activity: Activity;
 }
 export default function ActivityListItem({ activity }: Props) {
+  const followingStyles= {
+    borderColor: 'orange',
+    borderWidth: 2,
+    marginBottom: 4,
+  }
   return (
     <Segment.Group>
       <Segment>
@@ -21,11 +26,12 @@ export default function ActivityListItem({ activity }: Props) {
         <Item.Group>
           <Item>
             <Item.Image
-              style={{ marginBottom: 4 }}
+              style={activity.host?.following ? followingStyles : { marginBottom: 4 }}
               size="tiny"
               circular
               src={activity.host?.image || "/assets/user.png"}
               as={Link} to={`/profiles/${activity.hostUsername}`}
+              bordered
             />
             <Item.Content>
               <Item.Header as={Link} to={`/activities/${activity.id}`}>

@@ -10,6 +10,10 @@ interface Props {
 export default observer(function ActivityListItemAttendee({
   attendees,
 }: Props) {
+  const followingStyles= {
+    borderColor: 'teal',
+    borderWidth: 3,
+  }
   return (
     <List horizontal>
       {attendees.map((attendee) => (
@@ -26,6 +30,8 @@ export default observer(function ActivityListItemAttendee({
                 size="mini"
                 circular
                 src={attendee.image || "/assets/user.png"}
+                bordered
+                style={attendee.following ? followingStyles : null}
               />
             </List.Item>
           }
