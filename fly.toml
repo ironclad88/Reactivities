@@ -1,0 +1,23 @@
+# fly.toml app configuration file generated for ironclad-reactivities on 2023-10-30T16:11:40+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "ironclad-reactivities"
+primary_region = "ams"
+
+[build]
+  image = "ironclad88/reactivities:latest"
+
+[env]
+ ASPNETCORE_URLS="http://+:8080"
+ Cloudinary__CloudName="dy5byd3sf"
+ Cloudinary__ApiKey="853114752282314"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
