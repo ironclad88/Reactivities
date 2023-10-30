@@ -2,17 +2,16 @@ import { useState } from "react";
 import { Button, Grid, Header, Tab } from "semantic-ui-react";
 import { useStore } from "../../app/stores/store";
 import ProfileEditForm from "./ProfileEditForm";
-import { Profile } from "../../app/models/profile";
 
-interface Props {
-  profile: Profile;
-}
-
-export default function ProfileAbout({ profile }: Props) {
+export default function ProfileAbout() {
   const {
     profileStore: { isCurrentUser },
   } = useStore();
   const [editMode, setEditMode] = useState(false);
+  const {
+    profileStore: { profile },
+  } = useStore();
+  if (!profile) return null;
 
   return (
     <Tab.Pane>

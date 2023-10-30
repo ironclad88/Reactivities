@@ -6,6 +6,7 @@ import { store } from "../stores/store";
 import { User, UserFormValues } from "../models/user";
 import { Photo, Profile } from "../models/profile";
 import { PaginatedResult } from "../models/pagination";
+import { UserActivity } from "../models/userActivity";
 
 const sleep = (delay: number) => {
   return new Promise((resolve) => {
@@ -97,6 +98,10 @@ const Account = {
 const Profiles = {
   get: (username: string) => requests.get<Profile>(`/profiles/${username}`),
   update: (profile: Profile) => requests.put(`/profiles/`, profile),
+  listActivities: (params: URLSearchParams, username: string, predicate: string) =>
+    axios
+      .get<PaginatedResult<UserActivity[]>>(`/profiles/${username}/activities?predicate=${predicate}`, { params })
+      .then(responseBody),
   uploadPhoto: (file: Blob) => {
     const formData = new FormData();
     formData.append("File", file);

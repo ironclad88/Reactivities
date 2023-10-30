@@ -51,7 +51,7 @@ export default class ActivityStore {
   setPredicate = (predicate: string, value: string | Date) => {
     if (predicate !== "startDate") {
       // Clear other non-date filters if one is selected
-      this.predicate.forEach((value, key) => {
+      this.predicate.forEach((_, key) => {
         if (key !== "startDate") this.predicate.delete(key);
       });
     }
@@ -74,6 +74,8 @@ export default class ActivityStore {
 
   loadActivities = async () => {
     this.setLoadingInitial(true);
+    // console.log("in loadActivities, params: " + this.axiosParams  );
+
     try {
       const result = await agent.Activities.list(this.axiosParams);
       // runInAction(() => {
@@ -132,7 +134,7 @@ export default class ActivityStore {
   };
 
   setLoadingInitial = (state: boolean) => {
-    console.log("setting loadingInitial")
+    // console.log("setting loadingInitial")
     this.loadingInitial = state;
   };
 

@@ -2,6 +2,9 @@ import { makeAutoObservable, reaction, runInAction } from "mobx";
 import { Photo, Profile, ProfileFormValues } from "../models/profile";
 import agent from "../api/agent";
 import { store } from "./store";
+import { UserActivity } from "../models/userActivity";
+import { Pagination, PagingParams } from "../models/pagination";
+import { UserActivityFilter } from "../models/userActivityFilter";
 
 export default class ProfileStore {
   profile: Profile | null = null;
@@ -11,6 +14,12 @@ export default class ProfileStore {
   loadingFollowings = false;
   followings: Profile[] = [];
   activeTab = 0;
+  loadingActivitiesInitial = false;
+  loadingActivities = false;
+  pagination: Pagination | null = null;
+  pagingParams = new PagingParams();
+  activityRegistry: UserActivity[] = [];
+  activityFilter = new UserActivityFilter();
 
   constructor() {
     makeAutoObservable(this);
@@ -25,6 +34,36 @@ export default class ProfileStore {
         }
       }
     );
+    reaction(
+      () => this.activityFilter.predicate,
+      () => this.handleNewPredicate()
+    );
+    reaction(
+      () => this.activityFilter.username,
+      () => this.handleNewPredicate()
+    );
+  }
+
+  handleNewPredicate = () => {
+    this.activityRegistry = [];
+    this.pagingParams = new PagingParams(1,this.pagingParams.pageSize);
+    this.loadActivities();
+    // console.log("in act filter reaction");
+  }
+
+  setActivityFilter = (filter: UserActivityFilter) => {
+    this.activityFilter = filter;
+  };
+
+  setPagingParams = (pagingParams: PagingParams) => {
+    this.pagingParams = pagingParams;
+  };
+
+  get axiosParams() {
+    const params = new URLSearchParams();
+    params.append("pageNumber", this.pagingParams.pageNumber.toString());
+    params.append("pageSize", this.pagingParams.pageSize.toString());
+    return params;
   }
 
   setActiveTab = (activeTab: number) => (this.activeTab = activeTab);
@@ -49,6 +88,53 @@ export default class ProfileStore {
       runInAction(() => (this.loadingProfile = false));
     }
   };
+
+  clearActivities = () => {
+    this.activityRegistry = [];
+  }
+
+  loadActivities = async () => {
+    if(this.activityFilter.username === "") return;
+    if (this.activityRegistry.length === 0) {
+      this.loadingActivitiesInitial = true;
+    } else {
+      this.loadingActivities = true;
+    }
+    // console.log("in loadActivities, params: " + this.axiosParams + ", username: " + this.activityFilter.username + ", predicate: " + this.activityFilter.predicate);
+    try {
+      const result = await agent.Profiles.listActivities(
+        this.axiosParams,
+        this.activityFilter.username,
+        this.activityFilter.predicate
+      );
+      runInAction(() => {
+        result.data.forEach((activity) => {
+          this.activityRegistry.push({
+            ...activity,
+            ...{ date: new Date(activity.date!) },
+          });
+          // console.log(
+          //   "profileStore.loadActivities: added activity id " +
+          //     activity.id +
+          //     " to activityRegistry(size: " +
+          //     this.activityRegistry.length +
+          //     ")"
+          // );
+        });
+        this.pagination = result.pagination;
+        this.loadingActivities = false;
+        this.loadingActivitiesInitial = false;
+      });
+    } catch (error) {
+      console.log(error);
+      runInAction(() => {
+        this.loadingActivities = false;
+        this.loadingActivitiesInitial = false;
+      });
+    }
+  };
+
+  setLoadingActivities = (value: boolean) => (this.loadingActivities = value);
 
   updateProfile = async (profile: ProfileFormValues) => {
     this.loading = true;

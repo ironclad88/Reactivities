@@ -10,7 +10,6 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Activity>>> GetActivities([FromQuery] ActivityParams param)
         {
-            Console.WriteLine("test");
             return HandlePagedResult(await Mediator.Send(new List.Query { Params = param }));
         }
 

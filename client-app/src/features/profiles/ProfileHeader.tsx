@@ -1,13 +1,11 @@
 import { Divider, Grid, Header, Item, Segment, Statistic } from "semantic-ui-react";
-import { Profile } from "../../app/models/profile";
 import { observer } from "mobx-react-lite";
 import FollowButton from "./FollowButton";
+import { useStore } from "../../app/stores/store";
 
-interface Props {
-  profile: Profile;
-}
-export default observer(function PorfileHeader({ profile }: Props) {
-
+export default observer(function PorfileHeader() {
+  const { profileStore: {profile} } = useStore();
+  if (!profile) return null;
   return (
     <Segment>
       <Grid>
@@ -27,7 +25,7 @@ export default observer(function PorfileHeader({ profile }: Props) {
             <Statistic label="Following" value={profile.followingCount} />
           </Statistic.Group>
           <Divider />
-          <FollowButton profile={profile}/>
+          <FollowButton profile={profile} />
         </Grid.Column>
       </Grid>
     </Segment>
